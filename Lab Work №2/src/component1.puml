@@ -1,0 +1,44 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(backend, "Backend Service") {
+
+  Component(authController, "Контроллер авторизации", "REST API", "Обработка запросов авторизации")
+  Component(planController, "Контроллер планов развития", "REST API", "CRUD операции с планами")
+  Component(reportController, "Контроллер отчётности", "REST API", "Получение данных для отчётов")
+
+  Component(authService, "Сервис авторизации", "Бизнес-логика авторизации")
+  Component(planService, "Сервис планов развития", "Логика работы с планами")
+  Component(reportService, "Сервис отчётности", "Формирование данных для выгрузки")
+
+  Component(userStorage, "Хранилище пользователей", "ORM", "Работа с таблицей пользователей")
+  Component(planStorage, "Хранилище планов", "ORM", "Доступ к данным планов развития")
+  Component(logStorage, "Хранилище логов", "ORM", "Запись истории изменений")
+
+  Component(db, "База данных", "PostgreSQL", "Основное хранилище данных")
+}
+
+System_Ext(apiGateway, "API Gateway", "REST")
+System_Ext(notificationService, "Сервис уведомлений")
+System_Ext(integrationService, "Сервис интеграции")
+
+Rel(apiGateway, authController, "REST")
+Rel(apiGateway, planController, "REST")
+Rel(apiGateway, reportController, "REST")
+
+Rel(authController, authService, "Вызывает")
+Rel(planController, planService, "Вызывает")
+Rel(reportController, reportService, "Вызывает")
+
+Rel(authService, userStorage, "Запросы к хранилищу")
+Rel(planService, planStorage, "Работа с данными планов")
+Rel(reportService, logStorage, "Читает логи")
+
+Rel(userStorage, db, "SQL")
+Rel(planStorage, db, "SQL")
+Rel(logStorage, db, "SQL")
+
+Rel(planService, notificationService, "Отправка уведомлений")
+Rel(reportService, integrationService, "Передача данных для отчётов")
+
+@enduml
