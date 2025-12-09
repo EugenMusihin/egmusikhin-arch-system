@@ -15,10 +15,10 @@ Container_Boundary(backend, "Backend Service") {
   Component(planStorage, "Хранилище планов", "ORM", "Доступ к данным планов развития")
   Component(logStorage, "Хранилище логов", "ORM", "Запись истории изменений")
 
-  Component(db, "База данных", "PostgreSQL", "Основное хранилище данных")
 }
 
-System_Ext(apiGateway, "API Gateway", "REST")
+ContainerDb(db, "База данных", "PostgreSQL", "Основное хранилище данных")
+Container(apiGateway, "API Gateway", "REST")
 System_Ext(notificationService, "Сервис уведомлений")
 System_Ext(integrationService, "Сервис интеграции")
 

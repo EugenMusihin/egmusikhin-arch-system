@@ -1,5 +1,8 @@
 @startuml
 !includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+Person(employee, "Сотрудник")
+Person(mentor, "Наставник")
+Person(director, "Директор")
 
 Container_Boundary(frontend, "Frontend (React)") {
 
@@ -11,8 +14,10 @@ Container_Boundary(frontend, "Frontend (React)") {
   Component(apiClient, "API клиент", "Axios", "Отправка запросов к серверу")
 }
 
-System_Ext(apiGateway, "API Gateway", "REST")
-
+Container(apiGateway, "API Gateway", "REST")
+Rel(employee, ui, "Использует", "HTTPS")
+Rel(mentor, ui, "Использует", "HTTPS")
+Rel(director, ui, "Использует", "HTTPS")
 Rel(ui, router, "Осуществляет навигацию")
 Rel(ui, planModule, "Использует данные планов развития и компетенций")
 Rel(ui, authModule, "Проверяет статус авторизации")
