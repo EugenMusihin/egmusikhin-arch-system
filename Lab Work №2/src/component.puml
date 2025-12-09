@@ -1,0 +1,31 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+Person(employee, "Сотрудник")
+Person(mentor, "Наставник")
+Person(director, "Директор")
+
+Container_Boundary(frontend, "Frontend (React)") {
+
+  Component(ui, "Пользовательский интерфейс", "React + MUI", "Пользовательский интерфейс, формы, таблицы")
+  Component(router, "Слой маршрутизации", "React Router", "Управление страницами и навигация")
+  Component(authModule, "Модуль аутентификации", "JWT", "Авторизация и хранение токенов")
+  Component(planModule, "Модуль планов развития и компетенций", "React", "Управление индивидуальными планами развития сотрудника")
+  Component(notificationModule, "Интерфейс уведомлений", "React", "Отображение уведомлений")
+  Component(apiClient, "API клиент", "Axios", "Отправка запросов к серверу")
+}
+
+Container(apiGateway, "API Gateway", "REST")
+Rel(employee, ui, "Использует", "HTTPS")
+Rel(mentor, ui, "Использует", "HTTPS")
+Rel(director, ui, "Использует", "HTTPS")
+Rel(ui, router, "Осуществляет навигацию")
+Rel(ui, planModule, "Использует данные планов развития и компетенций")
+Rel(ui, authModule, "Проверяет статус авторизации")
+Rel(ui, notificationModule, "Отображает уведомления")
+
+Rel(planModule, apiClient, "CRUD запросы", "REST")
+Rel(authModule, apiClient, "Авторизация")
+
+Rel(apiClient, apiGateway, "REST / JSON")
+
+@enduml

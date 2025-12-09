@@ -1,0 +1,38 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(employee, "Сотрудник")
+Person(mentor, "Наставник")
+Person(director, "Директор")
+
+System_Boundary(sys, "Система управления планами развития") {
+
+  Container(frontend, "Frontend", "React (Web)", "Пользовательский интерфейс для сотрудников, наставников и директора")
+  Container(apiGateway, "API Gateway", "Node.js", "Единая точка входа для клиентов, маршрутизация, аутентификация")
+  Container(backend, "Backend", "С#", "Управление индивидуальными планами развития и компетенциями")
+  Container(notificationService, "Система уведомлений", "Node.js", "Уведомления (email)")
+  Container(integrationService, "Интеграция с системой отчетности", "FastAPI", "Выгрузки / интеграция с внешними системами отчётности")
+  ContainerDb(db, "База данных", "PostgreSQL", "Хранение пользователей, планов, компетенций, комментариев")
+  Container(messageBroker, "Брокер сообщений", "Kafka", " Передача событий")
+
+}
+
+System_Ext(reporting, "Система отчётности")
+
+Rel(employee, frontend, "Использует", "HTTPS")
+Rel(mentor, frontend, "Использует", "HTTPS")
+Rel(director, frontend, "Использует", "HTTPS")
+
+Rel(frontend, apiGateway, "REST", "HTTPS / JSON")
+Rel(apiGateway, backend, "REST", "JSON/HTTP")
+Rel(apiGateway, notificationService, "REST", "JSON/HTTP")
+Rel(apiGateway, integrationService, "REST", "JSON/HTTP")
+
+Rel(backend, db, "Читает/пишет", "SQL")
+
+Rel(backend, messageBroker, "Публикует события")
+
+Rel(messageBroker, notificationService, "Передаёт события")
+Rel(integrationService, reporting, "Выгружает данные", "Excel")
+
+@enduml
