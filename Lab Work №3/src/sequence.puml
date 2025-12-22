@@ -1,0 +1,34 @@
+@startuml
+actor Сотрудник as E
+actor Наставник as M
+participant "Frontend" as FE
+participant "API Gateway" as API
+participant "Контроллер планов развития" as PC
+participant "Сервис планов развития" as PS
+participant "Хранилище планов развития" as DB
+participant "Брокер сообщений" as MB
+participant "Сервис уведомлений" as NS
+
+== Сотрудник обновляет план ==
+E -> FE : Редактирует план развития
+FE -> API : PUT /plans/{id}
+API -> PC : HTTP-запрос
+PC -> PS : updatePlan()
+PS -> DB : save(plan)
+DB --> PS : OK
+PS -> MB : publish PlanUpdatedEvent
+MB -> NS : событие
+NS -> E : уведомление
+NS -> M : уведомление
+
+== Наставник добавляет комментарий ==
+M -> FE : Добавляет комментарий
+FE -> API : POST /plans/{id}/comments
+API -> PC : forwardRequest()
+PC -> PS : addComment(planId, text)
+PS -> DB : saveComment()
+DB --> PS : OK
+PS -> MB : publish CommentAddedEvent
+MB -> NS : событие
+NS -> E : уведомление
+@enduml
