@@ -1,0 +1,56 @@
+@startuml
+class User {
+  id: Integer
+  name: String
+  email: String
+  role: String
+}
+
+class DevelopmentPlan {
+  id: Integer
+  employeeId: Integer
+  status: String
+  createdDate: Date
+}
+
+class Goal {
+  id: Integer
+  planId: Integer
+  description: String
+  deadline: Date
+}
+
+class Competency {
+  id: Integer
+  name: String
+}
+
+class CompetencyLevel {
+  id: Integer
+  competencyId: Integer
+  userId: Integer
+  level: Integer
+}
+
+class Comment {
+  id: Integer
+  planId: Integer
+  authorId: Integer
+  text: String
+  createdDate: Date
+}
+
+class AuditLog {
+  id: Integer
+  entity: String
+  action: String
+  timestamp: Date
+}
+
+User "1" -- "0..*" DevelopmentPlan
+DevelopmentPlan "1" -- "1..*" Goal
+User "1" -- "0..*" Comment
+DevelopmentPlan "1" -- "0..*" Comment
+Competency "1" -- "0..*" CompetencyLevel
+User "1" -- "0..*" CompetencyLevel
+@enduml
