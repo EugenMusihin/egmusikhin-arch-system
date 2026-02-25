@@ -1,22 +1,19 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError, OperationalError
 from typing import List
-from sqlalchemy.exc import IntegrityError
+import time
+
 from database import SessionLocal, engine, Base
 from models import DevelopmentPlan, Goal
 from schemas import PlanSchema, PlanCreateSchema, GoalSchema
 
 app = FastAPI(title="Employee Development Plans API")
 
-Base.metadata.create_all(bind=engine)
-import time
-from sqlalchemy.exc import OperationalError
-
 def wait_for_db(max_attempts=10, wait_seconds=3):
     attempts = 0
     while attempts < max_attempts:
         try:
-            from database import engine
             conn = engine.connect()
             conn.close()
             print("Database is ready")
@@ -27,26 +24,34 @@ def wait_for_db(max_attempts=10, wait_seconds=3):
             time.sleep(wait_seconds)
     raise Exception("Database not ready after waiting")
 
-wait_for_db()
 def init_db_safe():
     db = SessionLocal()
     try:
-        if not db.query(DevelopmentPlan).first():
-            plans = [
-                DevelopmentPlan(id=i, employee_id=i, title=f'Plan {i}', status='active' if i % 3 != 0 else 'completed')
-                for i in range(1, 11)
-            ]
-            db.bulk_save_objects(plans)
-            db.commit()
+        db.query(DevelopmentPlan).delete()
+        db.commit()
 
-            db.execute("SELECT setval(pg_get_serial_sequence('plans','id'), (SELECT MAX(id) FROM plans));")
-            db.commit()
-    except Exception as e:
-        print("DB init error:", e)
+        plans = [
+            DevelopmentPlan(id=1, employee_id=1, title='Plan 1', status='active'),
+            DevelopmentPlan(id=2, employee_id=2, title='Plan 2', status='completed'),
+            DevelopmentPlan(id=3, employee_id=3, title='Plan 3', status='active'),
+            DevelopmentPlan(id=4, employee_id=4, title='Plan 4', status='draft'),
+            DevelopmentPlan(id=5, employee_id=5, title='Plan 5', status='active'),
+            DevelopmentPlan(id=6, employee_id=6, title='Plan 6', status='completed'),
+            DevelopmentPlan(id=7, employee_id=7, title='Plan 7', status='draft'),
+            DevelopmentPlan(id=8, employee_id=8, title='Plan 8', status='active'),
+            DevelopmentPlan(id=9, employee_id=9, title='Plan 9', status='active'),
+            DevelopmentPlan(id=10, employee_id=10, title='Plan 10', status='completed')
+        ]
+        db.add_all(plans)
+        db.commit()
+        print("Test data inserted")
+    except IntegrityError:
         db.rollback()
     finally:
         db.close()
 
+wait_for_db()
+Base.metadata.create_all(bind=engine)
 init_db_safe()
 
 def get_db():
@@ -69,11 +74,7 @@ def get_plan(plan_id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/plans", response_model=PlanSchema, status_code=201)
 def create_plan(plan: PlanCreateSchema, db: Session = Depends(get_db)):
-    db_plan = DevelopmentPlan(
-        employee_id=plan.employee_id,
-        title=plan.title,
-        status=plan.status
-    )
+    db_plan = DevelopmentPlan(employee_id=plan.employee_id, title=plan.title, status=plan.status)
     db.add(db_plan)
     db.commit()
     db.refresh(db_plan)
