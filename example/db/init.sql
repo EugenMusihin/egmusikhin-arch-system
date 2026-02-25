@@ -1,13 +1,13 @@
-DROP TABLE IF EXISTS plans;
+DROP TABLE IF EXISTS development_plan;
 
-CREATE TABLE plans (
+CREATE TABLE development_plan (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,
     status VARCHAR(100) NOT NULL
 );
 
-INSERT INTO plans (id, employee_id, title, status) VALUES
+INSERT INTO development_plan (id, employee_id, title, status) VALUES
 (1, 1, 'Plan 1', 'active'),
 (2, 2, 'Plan 2', 'completed'),
 (3, 3, 'Plan 3', 'active'),
@@ -19,4 +19,4 @@ INSERT INTO plans (id, employee_id, title, status) VALUES
 (9, 9, 'Plan 9', 'active'),
 (10, 10, 'Plan 10', 'completed');
 
-SELECT setval('plans_id_seq', (SELECT MAX(id) FROM plans));
+SELECT setval('development_plan_id_seq', (SELECT MAX(id) FROM development_plan));

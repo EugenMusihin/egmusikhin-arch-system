@@ -31,7 +31,7 @@ def init_db_safe():
         db.commit()
 
         plans = [
-            DevelopmentPlan(employee_id=i + 1, title=f"Plan {i + 1}", status='active' if i % 2 == 0 else 'completed')
+            DevelopmentPlan(id=i+1, employee_id=i+1, title=f'Plan {i+1}', status='active' if i % 2 == 0 else 'completed')
             for i in range(10)
         ]
         db.add_all(plans)
