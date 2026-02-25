@@ -15,7 +15,8 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/arch
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
       interval: 5s
@@ -28,10 +29,14 @@ services:
       POSTGRES_DB: arch
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
     volumes:
+      - db_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   tests:
     image: postman/newman
@@ -41,3 +46,6 @@ services:
     volumes:
       - ./postman_collection.json:/etc/newman/collection.json
     command: run /etc/newman/collection.json --delay-request 1000
+
+  volumes:
+    db_data:

@@ -5,7 +5,6 @@ from database import SessionLocal, engine, Base
 from models import DevelopmentPlan, Goal
 from schemas import PlanSchema, PlanCreateSchema, GoalSchema
 
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Employee Development Plans API")
 
