@@ -39,7 +39,7 @@ def init_db_safe():
         print("Test data inserted successfully")
 
         db.execute(
-            "SELECT setval('development_plan_id_seq', (SELECT MAX(id) FROM development_plan));"
+            "SELECT setval('development_plan_id_seq', COALESCE((SELECT MAX(id) FROM development_plan), 1), true);"
         )
         db.commit()
         print("Sequence development_plan_id_seq synced")
@@ -75,8 +75,8 @@ def get_plan(plan_id: int, db: Session = Depends(get_db)):
 @app.post("/api/plans", response_model=PlanSchema, status_code=201)
 def create_plan(plan: PlanCreateSchema, db: Session = Depends(get_db)):
     db_plan = DevelopmentPlan(
-        employee_id=plan.employee_id, 
-        title=plan.title, 
+        employee_id=plan.employee_id,
+        title=plan.title,
         status=plan.status
     )
     try:
