@@ -31,29 +31,18 @@ def init_db_safe():
         db.commit()
 
         plans = [
-            DevelopmentPlan(employee_id=1, title='Plan 1', status='active'),
-            DevelopmentPlan(employee_id=2, title='Plan 2', status='completed'),
-            DevelopmentPlan(employee_id=3, title='Plan 3', status='active'),
-            DevelopmentPlan(employee_id=4, title='Plan 4', status='draft'),
-            DevelopmentPlan(employee_id=5, title='Plan 5', status='active'),
-            DevelopmentPlan(employee_id=6, title='Plan 6', status='completed'),
-            DevelopmentPlan(employee_id=7, title='Plan 7', status='draft'),
-            DevelopmentPlan(employee_id=8, title='Plan 8', status='active'),
-            DevelopmentPlan(employee_id=9, title='Plan 9', status='active'),
-            DevelopmentPlan(employee_id=10, title='Plan 10', status='completed')
+            DevelopmentPlan(id=i+1, employee_id=i+1, title=f'Plan {i+1}', status='active' if i % 2 == 0 else 'completed')
+            for i in range(10)
         ]
         db.add_all(plans)
         db.commit()
         print("Test data inserted successfully")
 
-        try:
-            db.execute(
-                "SELECT setval('development_plan_id_seq', COALESCE((SELECT MAX(id) FROM development_plan), 1), false);"
-            )
-            db.commit()
-            print("Sequence development_plan_id_seq synced")
-        except Exception as seq_error:
-            print("Warning: cannot set sequence:", seq_error)
+        db.execute(
+            "SELECT setval('development_plan_id_seq', (SELECT MAX(id) FROM development_plan));"
+        )
+        db.commit()
+        print("Sequence development_plan_id_seq synced")
 
     except Exception as e:
         db.rollback()
