@@ -6,18 +6,23 @@ on:
   pull_request:
     branches: LabWork5
 
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: example
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Build and start containers
         run: docker compose up -d --build
 
-      - name: Run Postman tests via Newman
+      - name: Run Postman tests
         run: docker compose run --rm tests
 
       - name: Stop containers
