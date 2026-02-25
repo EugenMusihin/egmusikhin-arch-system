@@ -24,36 +24,40 @@ def wait_for_db(max_attempts=10, wait_seconds=3):
             time.sleep(wait_seconds)
     raise Exception("Database not ready after waiting")
 
-def init_db():
+def init_db_safe():
     db = SessionLocal()
     try:
-        if not db.query(DevelopmentPlan).first():
-            plans = [
-                DevelopmentPlan(employee_id=1, title='Plan 1', status='active'),
-                DevelopmentPlan(employee_id=2, title='Plan 2', status='completed'),
-                DevelopmentPlan(employee_id=3, title='Plan 3', status='active'),
-                DevelopmentPlan(employee_id=4, title='Plan 4', status='draft'),
-                DevelopmentPlan(employee_id=5, title='Plan 5', status='active'),
-                DevelopmentPlan(employee_id=6, title='Plan 6', status='completed'),
-                DevelopmentPlan(employee_id=7, title='Plan 7', status='draft'),
-                DevelopmentPlan(employee_id=8, title='Plan 8', status='active'),
-                DevelopmentPlan(employee_id=9, title='Plan 9', status='active'),
-                DevelopmentPlan(employee_id=10, title='Plan 10', status='completed')
-            ]
-            db.add_all(plans)
-            db.commit()
+        # Очистка таблицы
+        db.query(DevelopmentPlan).delete()
+        db.commit()
 
-            # синхронизируем sequence, чтобы новый INSERT не ломался
-            db.execute("SELECT setval('plans_id_seq', (SELECT MAX(id) FROM plans));")
-            db.commit()
+        # Вставка тестовых данных с явным ID
+        plans = [
+            DevelopmentPlan(id=1, employee_id=1, title='Plan 1', status='active'),
+            DevelopmentPlan(id=2, employee_id=2, title='Plan 2', status='completed'),
+            DevelopmentPlan(id=3, employee_id=3, title='Plan 3', status='active'),
+            DevelopmentPlan(id=4, employee_id=4, title='Plan 4', status='draft'),
+            DevelopmentPlan(id=5, employee_id=5, title='Plan 5', status='active'),
+            DevelopmentPlan(id=6, employee_id=6, title='Plan 6', status='completed'),
+            DevelopmentPlan(id=7, employee_id=7, title='Plan 7', status='draft'),
+            DevelopmentPlan(id=8, employee_id=8, title='Plan 8', status='active'),
+            DevelopmentPlan(id=9, employee_id=9, title='Plan 9', status='active'),
+            DevelopmentPlan(id=10, employee_id=10, title='Plan 10', status='completed')
+        ]
+        db.add_all(plans)
+        db.commit()
+
+        db.execute("SELECT setval('developmentplan_id_seq', (SELECT MAX(id) FROM developmentplan));")
+        db.commit()
+        print("Test data inserted")
     except IntegrityError:
         db.rollback()
     finally:
         db.close()
-
+        
 wait_for_db()
 Base.metadata.create_all(bind=engine)
-init_db()
+init_db_safe()
 
 def get_db():
     db = SessionLocal()
