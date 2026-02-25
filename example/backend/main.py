@@ -27,9 +27,11 @@ def wait_for_db(max_attempts=10, wait_seconds=3):
 def init_db_safe():
     db = SessionLocal()
     try:
+        # Очистка таблицы
         db.query(DevelopmentPlan).delete()
         db.commit()
 
+        # Вставка тестовых данных с явными id
         plans = [
             DevelopmentPlan(id=1, employee_id=1, title='Plan 1', status='active'),
             DevelopmentPlan(id=2, employee_id=2, title='Plan 2', status='completed'),
@@ -44,7 +46,11 @@ def init_db_safe():
         ]
         db.add_all(plans)
         db.commit()
-        print("Test data inserted")
+
+        db.execute("SELECT setval('developmentplan_id_seq', (SELECT MAX(id) FROM developmentplan));")
+        db.commit()
+
+        print("Test data inserted and sequence synced")
     except IntegrityError:
         db.rollback()
     finally:
