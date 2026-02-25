@@ -31,31 +31,30 @@ def init_db_safe():
         db.commit()
 
         plans = [
-            DevelopmentPlan(id=1, employee_id=1, title='Plan 1', status='active'),
-            DevelopmentPlan(id=2, employee_id=2, title='Plan 2', status='completed'),
-            DevelopmentPlan(id=3, employee_id=3, title='Plan 3', status='active'),
-            DevelopmentPlan(id=4, employee_id=4, title='Plan 4', status='draft'),
-            DevelopmentPlan(id=5, employee_id=5, title='Plan 5', status='active'),
-            DevelopmentPlan(id=6, employee_id=6, title='Plan 6', status='completed'),
-            DevelopmentPlan(id=7, employee_id=7, title='Plan 7', status='draft'),
-            DevelopmentPlan(id=8, employee_id=8, title='Plan 8', status='active'),
-            DevelopmentPlan(id=9, employee_id=9, title='Plan 9', status='active'),
-            DevelopmentPlan(id=10, employee_id=10, title='Plan 10', status='completed')
+            DevelopmentPlan(employee_id=1, title='Plan 1', status='active'),
+            DevelopmentPlan(employee_id=2, title='Plan 2', status='completed'),
+            DevelopmentPlan(employee_id=3, title='Plan 3', status='active'),
+            DevelopmentPlan(employee_id=4, title='Plan 4', status='draft'),
+            DevelopmentPlan(employee_id=5, title='Plan 5', status='active'),
+            DevelopmentPlan(employee_id=6, title='Plan 6', status='completed'),
+            DevelopmentPlan(employee_id=7, title='Plan 7', status='draft'),
+            DevelopmentPlan(employee_id=8, title='Plan 8', status='active'),
+            DevelopmentPlan(employee_id=9, title='Plan 9', status='active'),
+            DevelopmentPlan(employee_id=10, title='Plan 10', status='completed')
         ]
         db.add_all(plans)
         db.commit()
-
-        result = db.execute(
-            "SELECT relname FROM pg_class WHERE relkind='S' AND relname LIKE '%id_seq%';"
-        ).fetchall()
-
-        if result:
-            seq_name = result[0][0]
-            db.execute("SELECT setval('development_plan_id_seq', (SELECT MAX(id) FROM development_plan));")
-            db.commit()
-            print(f"Sequence {seq_name} synced")
-
         print("Test data inserted successfully")
+
+        try:
+            db.execute(
+                "SELECT setval('development_plan_id_seq', COALESCE((SELECT MAX(id) FROM development_plan), 1), false);"
+            )
+            db.commit()
+            print("Sequence development_plan_id_seq synced")
+        except Exception as seq_error:
+            print("Warning: cannot set sequence:", seq_error)
+
     except Exception as e:
         db.rollback()
         print("Error initializing DB:", e)
