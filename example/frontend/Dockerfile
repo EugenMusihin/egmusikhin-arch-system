@@ -2,10 +2,9 @@ FROM node:18
 
 WORKDIR /app
 
-RUN npm install -g yarn
-
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package*.json ./
+RUN npm config set registry https://registry.npmjs.org/
+RUN npm install
 
 COPY . .
 
