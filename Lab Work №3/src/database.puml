@@ -1,5 +1,5 @@
 @startuml
-class User {
+class Employee {
   id: Integer
   name: String
   email: String
@@ -47,10 +47,10 @@ class AuditLog {
   timestamp: Date
 }
 
-User "1" -- "0..*" DevelopmentPlan
+Employee "1" -- "0..*" DevelopmentPlan
 DevelopmentPlan "1" -- "1..*" Goal
-User "1" -- "0..*" Comment
+Employee "1" -- "0..*" Comment
 DevelopmentPlan "1" -- "0..*" Comment
 Competency "1" -- "0..*" CompetencyLevel
-User "1" -- "0..*" CompetencyLevel
+Employee "1" -- "0..*" CompetencyLevel
 @enduml

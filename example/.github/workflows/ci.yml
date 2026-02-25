@@ -1,0 +1,25 @@
+name: Docker CI with Newman
+
+on:
+  push:
+    branches: LabWork5
+  pull_request:
+    branches: LabWork5
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and start containers
+        run: docker compose up -d --build
+
+      - name: Run Postman tests via Newman
+        run: docker compose run --rm tests
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down

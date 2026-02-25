@@ -1,0 +1,244 @@
+{
+	"info": {
+		"_postman_id": "e711c1d3-4332-4476-87f6-3cd3ac3e2ab7",
+		"name": "Employee Development Plans API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33272318"
+	},
+	"item": [
+		{
+			"name": "http://backend:8000/api/plans",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response is an array\", function () {",
+							"  pm.expect(pm.response.json()).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://backend:8000/api/plans",
+					"protocol": "http",
+					"host": [
+						"backend"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"plans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://backend:8000/api/plans/3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains required fields\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  pm.expect(responseData).to.have.all.keys('id', 'employee_id', 'title', 'status');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://backend:8000/api/plans/3",
+					"protocol": "http",
+					"host": [
+						"backend"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"plans",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://backend:8000/api/plans",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Created plan data is valid\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.have.property('id');\r",
+							"    pm.expect(responseData).to.have.property('employee_id');\r",
+							"    pm.expect(responseData).to.have.property('title');\r",
+							"    pm.expect(responseData).to.have.property('status');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"employee_id\": 4,\r\n  \"title\": \"ff222\",\r\n  \"status\": \"aa222a3\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://backend:8000/api/plans",
+					"protocol": "http",
+					"host": ["backend"],
+					"port": "8000",
+					"path": [
+						"api",
+						"plans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://backend:8000/api/plans/9",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Plan was updated\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  pm.expect(responseData).to.have.property('id').that.is.not.equal(0);\r",
+							"  pm.expect(responseData).to.have.property('employee_id').that.is.not.equal(0);\r",
+							"  pm.expect(responseData).to.have.property('title').that.is.not.empty;\r",
+							"  pm.expect(responseData).to.have.property('status').that.is.not.empty;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"employee_id\": 4,\r\n  \"title\": \"ff22112\",\r\n  \"status\": \"aa222a3\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://backend:8000/api/plans/9",
+					"protocol": "http",
+					"host": ["backend"],
+					"port": "8000",
+					"path": [
+						"api",
+						"plans",
+						"9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://backend:8000/api/plans/9",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Delete message is correct\", function () {\r",
+							"    pm.expect(pm.response.json().message).to.eql(\"План успешно удален\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://backend:8000/api/plans/9",
+					"protocol": "http",
+					"host": ["backend"],
+					"port": "8000",
+					"path": [
+						"api",
+						"plans",
+						"9"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
