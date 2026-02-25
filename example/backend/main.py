@@ -5,8 +5,8 @@ from database import SessionLocal, engine, Base
 from models import DevelopmentPlan, Goal
 from schemas import PlanSchema, PlanCreateSchema, GoalSchema
 
-
 app = FastAPI(title="Employee Development Plans API")
+Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = SessionLocal()
@@ -62,3 +62,11 @@ def delete_plan(plan_id: int, db: Session = Depends(get_db)):
 @app.get("/api/plans/{plan_id}/goals", response_model=List[GoalSchema])
 def get_goals(plan_id: int, db: Session = Depends(get_db)):
     return db.query(Goal).filter(Goal.plan_id == plan_id).all()
+
+@app.get("/health")
+def health_check(db: Session = Depends(get_db)):
+    try:
+        db.execute("SELECT 1")
+        return {"status": "ok"}
+    except Exception:
+        raise HTTPException(status_code=500, detail="Database not ready")
