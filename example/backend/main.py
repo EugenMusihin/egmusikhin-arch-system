@@ -1,12 +1,42 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from sqlalchemy.exc import IntegrityError
 from database import SessionLocal, engine, Base
 from models import DevelopmentPlan, Goal
 from schemas import PlanSchema, PlanCreateSchema, GoalSchema
-from sqlalchemy.exc import IntegrityError
 
 app = FastAPI(title="Employee Development Plans API")
+
+Base.metadata.create_all(bind=engine)
+
+def init_db():
+    db = SessionLocal()
+    try:
+        if not db.query(DevelopmentPlan).first():
+            plans = [
+                DevelopmentPlan(id=1, employee_id=1, title='Plan 1', status='active'),
+                DevelopmentPlan(id=2, employee_id=2, title='Plan 2', status='completed'),
+                DevelopmentPlan(id=3, employee_id=3, title='Plan 3', status='active'),
+                DevelopmentPlan(id=4, employee_id=4, title='Plan 4', status='draft'),
+                DevelopmentPlan(id=5, employee_id=5, title='Plan 5', status='active'),
+                DevelopmentPlan(id=6, employee_id=6, title='Plan 6', status='completed'),
+                DevelopmentPlan(id=7, employee_id=7, title='Plan 7', status='draft'),
+                DevelopmentPlan(id=8, employee_id=8, title='Plan 8', status='active'),
+                DevelopmentPlan(id=9, employee_id=9, title='Plan 9', status='active'),
+                DevelopmentPlan(id=10, employee_id=10, title='Plan 10', status='completed')
+            ]
+            db.bulk_save_objects(plans)
+            db.commit()
+
+            db.execute("SELECT setval('plans_id_seq', (SELECT MAX(id) FROM plans));")
+            db.commit()
+    except IntegrityError:
+        db.rollback()
+    finally:
+        db.close()
+
+init_db()
 
 def get_db():
     db = SessionLocal()
