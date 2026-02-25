@@ -74,10 +74,18 @@ def get_plan(plan_id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/plans", response_model=PlanSchema, status_code=201)
 def create_plan(plan: PlanCreateSchema, db: Session = Depends(get_db)):
-    db_plan = DevelopmentPlan(employee_id=plan.employee_id, title=plan.title, status=plan.status)
-    db.add(db_plan)
-    db.commit()
-    db.refresh(db_plan)
+    db_plan = DevelopmentPlan(
+        employee_id=plan.employee_id, 
+        title=plan.title, 
+        status=plan.status
+    )
+    try:
+        db.add(db_plan)
+        db.commit()
+        db.refresh(db_plan)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {e}")
     return db_plan
 
 @app.put("/api/plans/{plan_id}", response_model=PlanSchema)
