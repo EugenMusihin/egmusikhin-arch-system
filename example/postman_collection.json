@@ -55,7 +55,7 @@
 			"response": []
 		},
 		{
-			"name": "http://backend:8000/api/plans/3",
+			"name": "http://backend:8000/api/plans/1",
 			"event": [
 				{
 					"listen": "test",
@@ -79,7 +79,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://backend:8000/api/plans/3",
+					"raw": "http://backend:8000/api/plans/1",
 					"protocol": "http",
 					"host": [
 						"backend"
@@ -88,7 +88,7 @@
 					"path": [
 						"api",
 						"plans",
-						"3"
+						"1"
 					]
 				}
 			},
@@ -144,7 +144,7 @@
 			"response": []
 		},
 		{
-			"name": "http://backend:8000/api/plans/9",
+			"name": "http://backend:8000/api/plans/1",
 			"event": [
 				{
 					"listen": "test",
@@ -180,21 +180,21 @@
 					}
 				},
 				"url": {
-					"raw": "http://backend:8000/api/plans/9",
+					"raw": "http://backend:8000/api/plans/1",
 					"protocol": "http",
 					"host": ["backend"],
 					"port": "8000",
 					"path": [
 						"api",
 						"plans",
-						"9"
+						"1"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "http://backend:8000/api/plans/9",
+			"name": "http://backend:8000/api/plans/1",
 			"event": [
 				{
 					"listen": "test",
@@ -227,14 +227,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://backend:8000/api/plans/9",
+					"raw": "http://backend:8000/api/plans/1",
 					"protocol": "http",
 					"host": ["backend"],
 					"port": "8000",
 					"path": [
 						"api",
 						"plans",
-						"9"
+						"1"
 					]
 				}
 			},

@@ -1,7 +1,5 @@
--- Удаляем таблицу если существует
 DROP TABLE IF EXISTS plans;
 
--- Создаем таблицу
 CREATE TABLE plans (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
@@ -9,7 +7,6 @@ CREATE TABLE plans (
     status VARCHAR(100) NOT NULL
 );
 
--- Вставляем 10 записей (id 1-10)
 INSERT INTO plans (id, employee_id, title, status) VALUES
 (1, 1, 'Plan 1', 'active'),
 (2, 2, 'Plan 2', 'completed'),
@@ -22,5 +19,4 @@ INSERT INTO plans (id, employee_id, title, status) VALUES
 (9, 9, 'Plan 9', 'active'),
 (10, 10, 'Plan 10', 'completed');
 
--- Обновляем sequence чтобы POST работал корректно
 SELECT setval('plans_id_seq', (SELECT MAX(id) FROM plans));
