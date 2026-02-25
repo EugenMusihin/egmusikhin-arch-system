@@ -45,20 +45,9 @@ def init_db_safe():
         db.add_all(plans)
         db.commit()
 
-        result = db.execute(
-            "SELECT relname FROM pg_class WHERE relkind='S' AND relname LIKE '%id_seq%';"
-        ).fetchall()
-
-        if result:
-            seq_name = result[0][0]
-            db.execute(f"SELECT setval('{seq_name}', (SELECT MAX(id) FROM {DevelopmentPlan.__tablename__}));")
-            db.commit()
-            print(f"Sequence {seq_name} synced")
-
-        print("Test data inserted successfully")
-    except Exception as e:
-        db.rollback()
-        print("Error initializing DB:", e)
+        db.execute("SELECT setval('development_plan_id_seq', (SELECT MAX(id) FROM development_plan));")
+        db.commit()
+        print("Test data inserted and sequence set")
     finally:
         db.close()
 
