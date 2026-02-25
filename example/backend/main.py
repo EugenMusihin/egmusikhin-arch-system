@@ -9,34 +9,45 @@ from schemas import PlanSchema, PlanCreateSchema, GoalSchema
 app = FastAPI(title="Employee Development Plans API")
 
 Base.metadata.create_all(bind=engine)
+import time
+from sqlalchemy.exc import OperationalError
 
-def init_db():
+def wait_for_db(max_attempts=10, wait_seconds=3):
+    attempts = 0
+    while attempts < max_attempts:
+        try:
+            from database import engine
+            conn = engine.connect()
+            conn.close()
+            print("Database is ready")
+            return
+        except OperationalError:
+            attempts += 1
+            print(f"Waiting for DB ({attempts}/{max_attempts})...")
+            time.sleep(wait_seconds)
+    raise Exception("Database not ready after waiting")
+
+wait_for_db()
+def init_db_safe():
     db = SessionLocal()
     try:
         if not db.query(DevelopmentPlan).first():
             plans = [
-                DevelopmentPlan(id=1, employee_id=1, title='Plan 1', status='active'),
-                DevelopmentPlan(id=2, employee_id=2, title='Plan 2', status='completed'),
-                DevelopmentPlan(id=3, employee_id=3, title='Plan 3', status='active'),
-                DevelopmentPlan(id=4, employee_id=4, title='Plan 4', status='draft'),
-                DevelopmentPlan(id=5, employee_id=5, title='Plan 5', status='active'),
-                DevelopmentPlan(id=6, employee_id=6, title='Plan 6', status='completed'),
-                DevelopmentPlan(id=7, employee_id=7, title='Plan 7', status='draft'),
-                DevelopmentPlan(id=8, employee_id=8, title='Plan 8', status='active'),
-                DevelopmentPlan(id=9, employee_id=9, title='Plan 9', status='active'),
-                DevelopmentPlan(id=10, employee_id=10, title='Plan 10', status='completed')
+                DevelopmentPlan(id=i, employee_id=i, title=f'Plan {i}', status='active' if i % 3 != 0 else 'completed')
+                for i in range(1, 11)
             ]
             db.bulk_save_objects(plans)
             db.commit()
 
-            db.execute("SELECT setval('plans_id_seq', (SELECT MAX(id) FROM plans));")
+            db.execute("SELECT setval(pg_get_serial_sequence('plans','id'), (SELECT MAX(id) FROM plans));")
             db.commit()
-    except IntegrityError:
+    except Exception as e:
+        print("DB init error:", e)
         db.rollback()
     finally:
         db.close()
 
-init_db()
+init_db_safe()
 
 def get_db():
     db = SessionLocal()
